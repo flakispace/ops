@@ -1,0 +1,15 @@
+[Unit]
+Description=CMaNGOS tbc mangosd
+After=network.target
+
+[Service]
+Type=single
+User=cmangos
+WorkingDirectory=/opt/cmangos-tbc/bin
+ExecStart=/opt/cmangos-tbc/bin/mangosd -c /etc/cmangos-tbc.conf
+Restart=on-failure
+RestartSec=30
+RuntimeDirectory=cmangos
+
+[Install]
+WantedBy=multi-user.target

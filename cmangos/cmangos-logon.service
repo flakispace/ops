@@ -1,0 +1,15 @@
+[Unit]
+Description=CMaNGOS realmd
+After=network.target
+
+[Service]
+Type=single
+User=cmangos
+WorkingDirectory=/opt/cmangos-vanilla/bin
+ExecStart=/opt/cmangos-vanilla/bin/realmd -c /etc/cmangos-logon.conf
+Restart=on-failure
+RestartSec=30
+RuntimeDirectory=cmangos
+
+[Install]
+WantedBy=multi-user.target
