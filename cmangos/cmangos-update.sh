@@ -183,6 +183,25 @@ pushd ${S} &> /dev/null
 ./InstallFullDB.sh | systemd-cat -t ${JOURNALD_TARGET}
 popd &> /dev/null
 
+cp /opt/cmangos-${FLAVOR}/etc/{ahbot.conf,playerbot.conf} /opt/cmangos-${FLAVOR}-${BUILD}/etc
+
 ln -snf /opt/cmangos-${FLAVOR}-${BUILD} /opt/cmangos-${FLAVOR}
 ln -snf /usr/share/cmangos/${CVER}-${BUILD} /usr/share/cmangos/${CVER}
 systemctl start cmangos-${FLAVOR}
+
+echo_h1 "cleanup old data"
+echo_h2 "remove old client data"
+pushd /usr/share/cmangos &> /dev/null
+for v in $(ls -1 -d -r ${CVER}-* | tail -n +2); do
+  echo_h3 "remove ${v}"
+  rm -rf ${v}
+done
+popd &> /dev/null
+
+echo_h2 "remove old server data"
+pushd /opt &> /dev/null
+for v in $(ls -1 -d -r cmangos-${FLAVOR}-* | tail -n +2); do
+  echo_h3 "remove ${v}"
+  rm -rf ${v}
+done
+popd &> /dev/null
