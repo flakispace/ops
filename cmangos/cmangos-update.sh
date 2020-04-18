@@ -72,7 +72,7 @@ case $FLAVOR in
 esac
 
 if [ ! -f /etc/cmangos-update/${FLAVOR}.conf ]; then
-  echo "missing mysql config (/etc/cmangos-update/${FLAVOR}.conf)"
+  echo "missing config (/etc/cmangos-update/${FLAVOR}.conf)"
   exit 3
 fi
 . /etc/cmangos-update/${FLAVOR}.conf
@@ -113,11 +113,13 @@ rm -rf $B; install -d $B
 echo_h2 "prepare build dir"
 pushd $B &> /dev/null
 cmake .. \
-  -DBUILD_PLAYERBOT=1 \
-  -DBUILD_EXTRACTORS=1 \
-  -DBUILD_GAME_SERVER=1 \
-  -DBUILD_LOGIN_SERVER=1 \
-  -DBUILD_SCRIPTDEV=1 \
+  -DBUILD_PLAYERBOT=${CMAKE_PLAYERBOT:-1} \
+  -DBUILD_EXTRACTORS=${CMAKE_EXTRACTORS:-1} \
+  -DBUILD_GAME_SERVER=${CMAKE_GAME_SERVER:-1} \
+  -DBUILD_LOGIN_SERVER=${CMAKE_LOGIN_SERVER:-1} \
+  -DBUILD_SCRIPTDEV=${CMAKE_SCRIPTDEV:-1} \
+  -DDEBUG=${CMAKE_DEBUG:-1} \
+  -DWARNINGS=${CMAKE_WARNINGS:-1}
   -DCMAKE_INSTALL_PREFIX=$D | systemd-cat -t ${JOURNALD_TARGET}
 
 echo_h2 "build core"
