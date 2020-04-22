@@ -1,0 +1,17 @@
+[Unit]
+Description=Counter-Strike: Source Dedicated Server
+After=network.target
+
+[Service]
+Type=simple
+User=steam
+Environment="CSS_MAP=de_dust2"
+Environment="CSS_MAXPLAYER=20"
+EnvironmentFile=-/etc/default/counter-strike_source
+WorkingDirectory=/var/lib/steam/server/counter-strike_source/%i
+ExecStart=/var/lib/steam/server/counter-strike_source/%i/srcds_run -console -game cstrike +map ${CSS_MAP} -maxplayers ${CSS_MAXPLAYER}
+Restart=on-failure
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target
