@@ -1,0 +1,15 @@
+[Unit]
+Description=Valve Source Dedicated Server
+After=network.target
+
+[Service]
+Type=simple
+User=steam
+EnvironmentFile=-/etc/default/srcds-%i
+WorkingDirectory=/var/lib/steam/server/srcds/%i
+ExecStart=/var/lib/steam/server/srcds/%i/srcds_run ${OPTIONS} ${CONSOLE} -port %i
+Restart=on-failure
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target
