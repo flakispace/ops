@@ -6,8 +6,8 @@ After=network.target
 Type=simple
 User=steam
 EnvironmentFile=-/etc/default/srcds-%i
-WorkingDirectory=/var/lib/steam/server/srcds/%i
-ExecStart=/var/lib/steam/server/srcds/%i/srcds_run ${OPTIONS} ${CONSOLE} -port %i
+WorkingDirectory=/opt/srcds/%i
+ExecStart=/opt/srcds/%i/srcds_run ${OPTIONS} ${CONSOLE} -port %i
 Restart=on-failure
 RestartSec=30
 
