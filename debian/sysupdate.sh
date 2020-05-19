@@ -19,7 +19,8 @@ for pid in $pids; do
     echo "restarting systemd" | systemd-cat -t $JOURNALD_TARGET
     systemctl daemon-reexec | systemd-cat -t $JOURNALD_TARGET
   else
-    systemctl restart $pid | systemd-cat -t $JOURNALD_TARGET
+    unit=$(systemctl status $pid | head -n 1 | awk '{ print $2 }')
+    systemctl restart $unit | systemd-cat -t $JOURNALD_TARGET
   fi
 done
 
