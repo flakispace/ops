@@ -10,10 +10,12 @@ fi
 BASEDIR="/var/lib/lxc/${2}"
 
 # choose distro
-if [ "$1" = "debian" ]; then
+if [ "$1" = "archlinux" ]; then
+  opts="-d archlinux -r current -a amd64"
+elif [ "$1" = "debian" ]; then
   opts="-d debian -r buster -a amd64"
 elif [ "$1" = "ubuntu" ]; then
-  opts="-d ubuntu -r bionic -a amd64"
+  opts="-d ubuntu -r focal -a amd64"
 elif [ "$1" = "opensuse" ]; then
   opts="-d opensuse -r 15.1 -a amd64"
 else
@@ -35,12 +37,18 @@ install -m 0600 /root/.ssh/authorized_keys ${BASEDIR}/rootfs/root/.ssh/authorize
 
 install -m 0644 /etc/resolv.conf ${BASEDIR}/rootfs/etc/resolv.conf
 
-if [ "$1" = "ubuntu" ]; then
+if [ "$1" = "archlinux" ] || [ "$1" = "ubuntu" ]; then
   ln -s /dev/null ${BASEDIR}/rootfs/etc/systemd/system/systemd-networkd.service || true
+  systemctl disable systemd-resolved || true
+  systemctl stop systemd-resolved || true
 fi
 
 lxc-start -n $2
-if [ "$1" = "ubuntu" ] || [ "$1" = "debian" ]; then
+if [ "$1" = "archlinux" ]; then
+  lxc-attach -n $2 --clear-env -- /bin/su -l -c "pacman -Sy --noconfirm openssh"
+  lxc-attach -n $2 --clear-env -- /bin/su -l -c "systemctl enable sshd"
+  lxc-attach -n $2 --clear-env -- /bin/su -l -c "systemctl start sshd"
+elif [ "$1" = "ubuntu" ] || [ "$1" = "debian" ]; then
   lxc-attach -n $2 --clear-env -- /bin/su -l -c "apt-get -y install openssh-server less"
 elif [ "$1" = "opensuse" ]; then
   lxc-attach -n $2 --clear-env -- /bin/su -l -c "zypper -n install openssh less vim"
