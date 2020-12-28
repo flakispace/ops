@@ -1,0 +1,70 @@
+export EDITOR="/usr/bin/vim"
+
+autoload -Uz compinit promptinit colors
+compinit
+promptinit
+colors
+
+setopt COMPLETE_ALIASES
+setopt prompt_subst
+setopt interactivecomments
+setopt hist_ignore_all_dups
+setopt hist_ignore_space
+
+export HISTSIZE=2000
+export HISTFILE="${HOME}/.zsh_history"
+export SAVEHIST=${HISTSIZE}
+export INC_APPEND_HISTORY=1
+
+bindkey "^[[H" beginning-of-line
+bindkey "^[[F" end-of-line
+bindkey "^[[3~" delete-char
+
+bindkey "^[[A" up-line-or-search
+bindkey "^[[B" down-line-or-search
+bindkey "^R" history-incremental-search-backward
+
+BLUE="%{${fg[blue]}%}"
+YELLOW="%{${fg[yellow]}%}"
+RED="%{${fg[red]}%}"
+GREEN="%{${fg[green]}%}"
+CYAN="%{${fg[cyan]}%}"
+WHITE="%{${fg[white]}%}"
+GREY="%{${fg[grey]}%}"
+NO_COLOR="%{${reset_color}%}"
+
+if (( EUID != 0 )); then
+  PROMPT="${RED}%(?..%?%1v )${WHITE}${YELLOW}%M${WHITE}:%20<...<%~ ${GREEN}>${NO_COLOR} "
+else
+  PROMPT="${RED}%(?..%?%1v )${WHITE}${YELLOW}%M${WHITE}:%20<...<%~ ${RED}>${NO_COLOR} "
+fi
+
+zstyle ':completion:*' menu yes select
+zstyle ':completion:*:*:git:*' script /usr/share/git/completion/git-completion.zsh
+
+source /usr/share/git/git-prompt.sh
+export RPROMPT=$'${CYAN}$(__git_ps1 "%s")${NO_COLOR}'
+
+if [ -d ${HOME}/.zsh.d ]; then
+  for file in ${HOME}/.zsh.d/*.zsh; do
+    source ${file}
+  done
+fi
+
+# usage: eol <file>
+function eol() {
+  if [ -n "$(tail -c1 ${1})" ]; then echo "file has no eol"; return 1; fi
+}
+
+# usage: lxenter <lxc> [<user>]
+function lxenter() {
+  if [ "${1}" = "" ]; then echo "USAGE: lxenter <lxc> [<user>]"; return 1; fi
+  RUN="lxc-attach -n ${1} --clear-env -- /bin/su -l ${2}"
+  if (( EUID != 0 )); then RUN="su -c '${RUN}'"; fi
+  eval ${RUN}
+}
+
+# usage: pwgen [<len>]
+function pwgen() {
+  < /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c${1:-32}; echo;
+}
