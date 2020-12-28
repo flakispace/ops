@@ -1,5 +1,9 @@
 export EDITOR="/usr/bin/vim"
 
+if [ -f /etc/os-release ]; then
+  DISTRO=$(grep -E "^ID=" /etc/os-release | awk -F "=" '{ print $2 }')
+fi
+
 autoload -Uz compinit promptinit colors
 compinit
 promptinit
@@ -42,7 +46,15 @@ fi
 zstyle ':completion:*' menu yes select
 zstyle ':completion:*:*:git:*' script /usr/share/git/completion/git-completion.zsh
 
-source /usr/share/git/git-prompt.sh
+case "${DISTRO}" in
+  "arch")
+    source /usr/share/git/git-prompt.sh
+    ;;
+  "debian")
+    source /usr/lib/git-core/git-sh-prompt
+    ;;
+esac
+
 export RPROMPT=$'${CYAN}$(__git_ps1 "%s")${NO_COLOR}'
 
 if [ -d ${HOME}/.zsh.d ]; then
