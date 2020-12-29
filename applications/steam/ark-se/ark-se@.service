@@ -1,0 +1,33 @@
+# Environment variables to set in /etc/default/ark-se-<port>
+#
+# MAP:           TheIsland|TheCenter|ScorchedEarth_P|Ragnarok
+#                Aberration_P|Extinction|Valguero_P|Genesis|CrystalIsles
+# NAME:          custom session name (shown in server list)
+# PORT:          peer port
+# RCONPORT:      remote console port
+# PASSWORD:      password to restrict server access
+# ADMINPASSWORD: password to administrate server
+# EVENT:         -ActiveEvent=<event>
+#                             WinterWonderland
+#                             Easter
+#                             Arkaeology
+#                             ExtinctionChronicles
+#                             SummerBash
+#                             None
+
+[Unit]
+Description=ARK: Survival Evolved
+After=network.target
+
+[Service]
+Type=simple
+User=steam
+EnvironmentFile=-/etc/default/ark-se-%i
+WorkingDirectory=/opt/ark-se/%i
+ExecStart=/opt/ark-se/%i/ShooterGame/Binaries/Linux/ShooterGameServer ${MAP}?listen?SessionName=${NAME}?QueryPort=%i?Port=${PORT}?RCONPort=${RCONPORT}?ServerPassword=${PASSWORD}?ServerAdminPassword=${ADMINPASSWORD} -server -log ${EVENT}
+
+Restart=on-failure
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target
